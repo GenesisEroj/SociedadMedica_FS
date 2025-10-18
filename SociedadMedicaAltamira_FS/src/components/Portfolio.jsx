@@ -25,7 +25,7 @@ export default function Portfolio() {
   return (
     <section className="page-section portfolio" id="portfolio">
       <div className="container">
-        <h2 className="page-section-heading text-center text-uppercase text-secondary mb-0">Galeria</h2>
+        <h2 className="page-section-heading text-center text-uppercase text-secondary mb-0 colorh2">Galeria</h2>
         <Divider />
         <div className="row justify-content-center">
           {items.map((it, idx) => (
