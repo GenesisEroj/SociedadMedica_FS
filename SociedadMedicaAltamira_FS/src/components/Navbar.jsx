@@ -2,7 +2,7 @@ export default function Navbar() {
   return (
     <nav className="navbar navbar-expand-lg bg-secondary text-uppercase fixed-top" id="mainNav">
       <div className="container">
-        <a class="navbar-brand" href="#page-top"><img src=".\assets\img\logo.png" alt="logoempresa" class="navbar-logo"/></a>
+        <a className="navbar-brand" href="#page-top"><img src=".\assets\img\logo.png" alt="logoempresa" className="navbar-logo"/></a>
         <button className="navbar-toggler text-uppercase font-weight-bold bg-primary text-white rounded" type="button"
           data-bs-toggle="collapse" data-bs-target="#navbarResponsive" aria-controls="navbarResponsive"
           aria-expanded="false" aria-label="Toggle navigation">
