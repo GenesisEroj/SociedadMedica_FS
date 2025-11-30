@@ -1,7 +1,3 @@
-// src/services/reservasApi.js
-
-// Toma la URL desde .env.local (Vite)
-// VITE_API_RESERVA_URL=http://localhost:8083/api/reservas2
 const API_RESERVAS_URL =
   import.meta.env.VITE_API_RESERVA_URL || 'http://localhost:8083/api/reservas'
 

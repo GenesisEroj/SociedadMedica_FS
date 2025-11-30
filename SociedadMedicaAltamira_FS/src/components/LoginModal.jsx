@@ -1,31 +1,45 @@
+// src/components/LoginModal.jsx
 import { useState } from 'react'
 import { useAuth } from '../context/AuthContext'
 
-const API_BASE = 'http://localhost:8081/api/usuario'
+const API_BASE_URL =
+  import.meta.env.VITE_API_USUARIO_URL ?? 'http://localhost:8081/api/usuario'
 
 export default function LoginModal({ isOpen, onClose }) {
-  const { login: loginContext } = useAuth()
+  const { login } = useAuth()
 
   const [mode, setMode] = useState('login') // "login" | "register" | "forgot"
+
   const [form, setForm] = useState({
-    name: '',
     email: '',
     password: '',
+    name: '',
+    apellido: '',
+    edad: '',
+    numeroDocumento: '',
+    tipoDocumento: 'RUT',
     confirmPassword: '',
   })
+
   const [error, setError] = useState('')
+  const [message, setMessage] = useState('')
   const [loading, setLoading] = useState(false)
 
   if (!isOpen) return null
 
   const resetForm = () => {
     setForm({
-      name: '',
       email: '',
       password: '',
+      name: '',
+      apellido: '',
+      edad: '',
+      numeroDocumento: '',
+      tipoDocumento: 'RUT',
       confirmPassword: '',
     })
     setError('')
+    setMessage('')
   }
 
   const changeMode = (newMode) => {
@@ -34,30 +48,31 @@ export default function LoginModal({ isOpen, onClose }) {
   }
 
   const onChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value })
-    setError('')
+    const { name, value } = e.target
+    setForm((prev) => ({ ...prev, [name]: value }))
   }
 
   const validate = () => {
-    if (!form.email.trim()) return 'El correo es obligatorio.'
-    if (!/\S+@\S+\.\S+/.test(form.email.trim())) {
-      return 'Ingresa un correo válido.'
-    }
+    if (!form.email.trim()) return 'Debes ingresar un correo electrónico.'
 
     if (mode === 'login') {
-      if (!form.password) return 'La contraseña es obligatoria.'
-      if (form.password.length < 6)
-        return 'La contraseña debe tener al menos 6 caracteres.'
+      if (!form.password) return 'Debes ingresar tu contraseña.'
+      return ''
     }
 
     if (mode === 'register') {
-      if (!form.name.trim()) return 'El nombre es obligatorio.'
+      if (!form.name.trim()) return 'Debes ingresar tu nombre.'
+      if (!form.apellido.trim()) return 'Debes ingresar tu apellido.'
+      if (!form.edad) return 'Debes ingresar tu edad.'
+      if (!form.numeroDocumento.trim())
+        return 'Debes ingresar tu número de documento.'
       if (!form.password || !form.confirmPassword)
         return 'Debes ingresar y confirmar la contraseña.'
       if (form.password.length < 6)
         return 'La contraseña debe tener al menos 6 caracteres.'
       if (form.password !== form.confirmPassword)
         return 'Las contraseñas no coinciden.'
+      return ''
     }
 
     return ''
@@ -66,6 +81,7 @@ export default function LoginModal({ isOpen, onClose }) {
   const handleSubmit = async (e) => {
     e.preventDefault()
     setError('')
+    setMessage('')
 
     const validationError = validate()
     if (validationError) {
@@ -73,78 +89,55 @@ export default function LoginModal({ isOpen, onClose }) {
       return
     }
 
-    setLoading(true)
     try {
+      setLoading(true)
+
       if (mode === 'login') {
-        // LOGIN contra tu API
-        const resp = await fetch(`${API_BASE}/login`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            email: form.email.trim(),
-            password: form.password,
-          }),
-        })
+        // 🔐 LOGIN → usa AuthContext (que llama a /login)
+        await login(form.email.trim(), form.password)
+        onClose()
+        return
+      }
 
-        if (!resp.ok) {
-          const data = await resp.json().catch(() => ({}))
-          throw new Error(data.message || 'Error al iniciar sesión')
+      if (mode === 'register') {
+        // 📝 REGISTRO → POST /registro
+        const body = {
+          name: form.name.trim(),
+          email: form.email.trim(),
+          password: form.password,
+          role: 'CLIENT', // coincide con RolUsuario.CLIENT del backend
         }
 
-        const data = await resp.json()
-
-        // aquí usas tu contexto para guardar el usuario
-        await loginContext({
-          token: data.token,
-          userId: data.userId,
-          name: data.name,
-          email: data.email,
-          role: data.role,
-        })
-
-        resetForm()
-        onClose?.()
-      } else if (mode === 'register') {
-        // REGISTRO contra tu API
-        const resp = await fetch(`${API_BASE}/registro`, {
+        const res = await fetch(`${API_BASE_URL}/registro`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            name: form.name.trim(),
-            email: form.email.trim(),
-            password: form.password,
-          }),
+          body: JSON.stringify(body),
         })
 
-        if (!resp.ok) {
-          const data = await resp.json().catch(() => ({}))
-          throw new Error(data.message || 'Error al registrar usuario')
+        if (!res.ok) {
+          let msg = 'Error al registrar usuario.'
+          try {
+            const text = await res.text()
+            if (text) msg = text // por si el backend devuelve texto plano
+          } catch {
+            // ignore
+          }
+          throw new Error(msg)
         }
 
-        const data = await resp.json()
+        // después de registrar, logueamos automáticamente
+        await login(form.email.trim(), form.password)
+        onClose()
+        return
+      }
 
-        // Si quieres que quede logueado al registrarse:
-        await loginContext({
-          token: data.token,
-          userId: data.userId,
-          name: data.name,
-          email: data.email,
-          role: data.role,
-        })
-
-        resetForm()
-        onClose?.()
-      } else if (mode === 'forgot') {
-        // por ahora solo demo
-        alert(
-          'Si el correo existe, se enviará un enlace para recuperar la contraseña (DEMO).'
+      if (mode === 'forgot') {
+        setMessage(
+          'Si el correo está registrado, te enviaremos instrucciones para recuperar la contraseña.'
         )
-        resetForm()
-        onClose?.()
       }
     } catch (err) {
-      // errores de red como "Failed to fetch" también caen acá
-      setError(err.message || 'Ocurrió un error inesperado.')
+      setError(err.message ?? 'Ocurrió un error.')
     } finally {
       setLoading(false)
     }
@@ -162,20 +155,31 @@ export default function LoginModal({ isOpen, onClose }) {
       style={{
         position: 'fixed',
         inset: 0,
-        backgroundColor: 'rgba(0,0,0,0.5)',
-        zIndex: 1050,
+        backgroundColor: 'rgba(0,0,0,0.6)',
         display: 'flex',
-        alignItems: 'center',
         justifyContent: 'center',
+        alignItems: 'center',
+        zIndex: 1050,
       }}
+      onClick={onClose}
     >
-      <div className="card p-4" style={{ maxWidth: '430px', width: '100%' }}>
+      <div
+        className="card p-4"
+        style={{
+          maxWidth: '450px',
+          width: '100%',
+          maxHeight: '90vh',   // altura máxima del modal
+          overflowY: 'auto',   // 👈 SCROLL VERTICAL
+        }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* HEADER */}
         <div className="d-flex justify-content-between align-items-center mb-3">
           <h5 className="mb-0">{title}</h5>
           <button className="btn-close" onClick={onClose}></button>
         </div>
 
-        {/* Tabs */}
+        {/* TABS */}
         <div className="btn-group w-100 mb-3" role="group">
           <button
             type="button"
@@ -206,35 +210,50 @@ export default function LoginModal({ isOpen, onClose }) {
           </button>
         </div>
 
+        {/* FORM */}
         <form onSubmit={handleSubmit}>
           {mode === 'register' && (
-            <div className="mb-3 text-start">
-              <label className="form-label">Nombre completo</label>
-              <input
-                type="text"
-                name="name"
-                className="form-control"
-                value={form.name}
-                onChange={onChange}
-                placeholder="Ej: María Jesús Rojas"
-              />
-            </div>
+            <>
+              <div className="mb-3">
+                <label className="form-label">Nombre</label>
+                <input
+                  type="text"
+                  name="name"
+                  className="form-control"
+                  placeholder="Ej: Sofía"
+                  value={form.name}
+                  onChange={onChange}
+                />
+              </div>
+
+              <div className="mb-3">
+                <label className="form-label">Apellido</label>
+                <input
+                  type="text"
+                  name="apellido"
+                  className="form-control"
+                  placeholder="Ej: García"
+                  value={form.apellido}
+                  onChange={onChange}
+                />
+              </div>
+            </>
           )}
 
-          <div className="mb-3 text-start">
+          <div className="mb-3">
             <label className="form-label">Correo electrónico</label>
             <input
               type="email"
               name="email"
               className="form-control"
+              placeholder="correo@ejemplo.cl"
               value={form.email}
               onChange={onChange}
-              placeholder="correo@ejemplo.cl"
             />
           </div>
 
-          {mode !== 'forgot' && (
-            <div className="mb-3 text-start">
+          {(mode === 'login' || mode === 'register') && (
+            <div className="mb-3">
               <label className="form-label">Contraseña</label>
               <input
                 type="password"
@@ -242,29 +261,78 @@ export default function LoginModal({ isOpen, onClose }) {
                 className="form-control"
                 value={form.password}
                 onChange={onChange}
-                placeholder="********"
               />
-              <small className="form-text text-muted">
-                Mínimo 6 caracteres.
-              </small>
+              {mode === 'register' && (
+                <small className="form-text text-muted">
+                  Mínimo 6 caracteres.
+                </small>
+              )}
             </div>
           )}
 
           {mode === 'register' && (
-            <div className="mb-3 text-start">
-              <label className="form-label">Confirmar contraseña</label>
-              <input
-                type="password"
-                name="confirmPassword"
-                className="form-control"
-                value={form.confirmPassword}
-                onChange={onChange}
-                placeholder="Repite la contraseña"
-              />
-            </div>
+            <>
+              <div className="mb-3">
+                <label className="form-label">Confirmar contraseña</label>
+                <input
+                  type="password"
+                  name="confirmPassword"
+                  className="form-control"
+                  placeholder="Repite la contraseña"
+                  value={form.confirmPassword}
+                  onChange={onChange}
+                />
+              </div>
+
+              <div className="mb-3">
+                <label className="form-label">Edad</label>
+                <input
+                  type="number"
+                  name="edad"
+                  className="form-control"
+                  value={form.edad}
+                  onChange={onChange}
+                />
+              </div>
+
+              <div className="mb-3">
+                <label className="form-label">Número de documento</label>
+                <input
+                  type="text"
+                  name="numeroDocumento"
+                  className="form-control"
+                  placeholder="Ej: 10987654-8"
+                  value={form.numeroDocumento}
+                  onChange={onChange}
+                />
+              </div>
+
+              <div className="mb-3">
+                <label className="form-label">Tipo de documento</label>
+                <select
+                  name="tipoDocumento"
+                  className="form-select"
+                  value={form.tipoDocumento}
+                  onChange={onChange}
+                >
+                  <option value="RUT">RUT</option>
+                  <option value="PASAPORTE">Pasaporte</option>
+                </select>
+              </div>
+            </>
+          )}
+
+          {mode === 'forgot' && (
+            <p className="text-muted">
+              Ingresa el correo con el que te registraste. Si existe una cuenta
+              asociada, te enviaremos un enlace para recuperar tu contraseña.
+            </p>
           )}
 
           {error && <div className="alert alert-danger py-2">{error}</div>}
+          {message && (
+            <div className="alert alert-success py-2">{message}</div>
+          )}
 
           <button
             type="submit"
@@ -278,3 +346,4 @@ export default function LoginModal({ isOpen, onClose }) {
     </div>
   )
 }
+

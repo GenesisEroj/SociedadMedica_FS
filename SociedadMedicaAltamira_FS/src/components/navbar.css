@@ -1,78 +1,54 @@
-#mainNav {
-    padding-top: 0.6rem;
-    padding-bottom: 0.6rem;
-    background-color: rgba(45, 55, 72, 0.96);
-    backdrop-filter: blur(10px);
-    box-shadow: 0 2px 14px rgba(0, 0, 0, 0.24);
+/* separa los ítems del menú */
+.navbar-nav .nav-item {
+  margin-top: 4px;
+  margin-bottom: 4px;
 }
 
-.navbar-logo {
-    height: 52px;
-    width: auto;
-    object-fit: contain;
+/* estilo general de los links del menú */
+.nav-link-main {
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: #001a66 !important;        /* azul fuerte */
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  text-decoration: none;
 }
 
-/* Links */
-.navbar-nav .nav-link.btn-link {
-    color: #e2e8f0;
-    font-weight: 600;
-    font-size: 0.85rem;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    padding-inline: 1rem !important;
-    border-radius: 999px;
-    text-decoration: none;
+.nav-link-main:hover,
+.nav-link-main:focus {
+  color: #0033cc !important;
 }
 
-.navbar-nav .nav-link.btn-link:hover {
-    color: #ffffff;
-    background-color: rgba(255, 255, 255, 0.09);
+/* link ADMIN en amarillo */
+.nav-link-admin {
+  font-weight: 800;
+  letter-spacing: 1px;
+  color: #001a66 !important;        /* amarillo */
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  text-decoration: none;
 }
 
-/* Botón login */
-.navbar .btn.btn-primary {
-    border-radius: 999px;
-    padding-inline: 1.4rem;
-    font-weight: 600;
-    box-shadow: 0 0 0 1px rgba(15, 23, 42, 0.35);
+.nav-link-admin:hover,
+.nav-link-admin:focus {
+  color: #001a66 !important;
 }
 
-/* Botón logout */
-.navbar .btn.btn-outline-light.btn-sm {
-    border-radius: 999px;
-    border-width: 1px;
-    padding-inline: 0.9rem;
+/* botón de login */
+.login-btn {
+  margin-top: 4px;
 }
 
-/* Toggler móvil */
-.navbar-toggler {
-    font-size: 0.7rem;
-    padding: 0.35rem 0.6rem;
-    border-radius: 999px;
-    border: none;
-    box-shadow: 0 0 0 1px rgba(15, 23, 42, 0.35);
+/* saludo “HOLA, CORREO” */
+.saludo-usuario {
+  color: #001a66;
 }
 
-.navbar-toggler:focus {
-    box-shadow: 0 0 0 2px rgba(129, 230, 217, 0.8);
-    outline: none;
+/* en pantallas chicas, que todo quede con buen espacio */
+@media (max-width: 992px) {
+  .navbar-nav .nav-item {
+    margin: 6px 0;
+  }
 }
-
-@media (max-width: 991.98px) {
-    #mainNav {
-        padding-top: 0.4rem;
-        padding-bottom: 0.4rem;
-    }
-
-    .navbar-nav .nav-item {
-        text-align: center;
-        margin-top: 0.25rem;
-        margin-bottom: 0.25rem;
-    }
-
-    .navbar .btn.btn-primary {
-        width: 100%;
-        justify-content: center;
-    }
-}
-
