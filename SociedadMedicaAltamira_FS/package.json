@@ -3,17 +3,19 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
- "scripts": {
-  "dev": "vite",
-  "build": "vite build",
-  "preview": "vite preview",
-  "test": "npx karma start karma.conf.cjs --single-run",
-  "test:watch": "npx karma start karma.conf.cjs",
-  "test:open": "npx karma start karma.conf.cjs --browsers Chrome"
-},
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "test": "npx karma start karma.conf.cjs --single-run",
+    "test:watch": "npx karma start karma.conf.cjs",
+    "test:open": "npx karma start karma.conf.cjs --browsers Chrome"
+  },
   "dependencies": {
+    "file-saver": "^2.0.5",
     "react": "^18.3.1",
-    "react-dom": "^18.3.1"
+    "react-dom": "^18.3.1",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "@testing-library/dom": "^10.4.1",
