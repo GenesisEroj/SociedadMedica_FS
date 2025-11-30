@@ -1,30 +1,75 @@
+/* ---- RESET Y BASE ---- */
+html,
+body,
 #root {
-  max-width: 1280px;
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: system-ui, sans-serif;
+  background: #ffffff;
+  overflow-y: scroll;
+}
+
+/* ---- CONTENEDOR PRINCIPAL ---- */
+.app-main {
+  min-height: calc(100vh - 140px);
+  width: 100%;
+}
+
+/* ---- VISTAS TIPO PANTALLA ---- */
+.screen-page {
+  min-height: calc(100vh - 140px);
+  padding-top: 120px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.screen-page .container {
+  max-width: 900px;
   margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+/* ---- TARJETAS ---- */
+.card {
+  border-radius: 12px;
 }
 
+/* ---- BOTONES ---- */
+button.btn-primary,
+button.btn-success {
+  border-radius: 8px;
+  padding: 10px 22px;
+  font-size: 16px;
+}
+
+/* ---- TITULOS ---- */
+.page-section-heading {
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+/* ---- SCROLL suave ---- */
+html {
+  scroll-behavior: smooth;
+}
+
+/* ---- Bloque del template de Vite eliminado ---- */
+/*
+.read-the-docs,
+.logo,
+.logo:hover,
+.logo.react:hover {}
+*/
+
+/*
 @keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
 }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -32,11 +77,4 @@
     animation: logo-spin infinite 20s linear;
   }
 }
-
-.card {
-  padding: 2em;
-}
-
-.read-the-docs {
-  color: #888;
-}
+*/
