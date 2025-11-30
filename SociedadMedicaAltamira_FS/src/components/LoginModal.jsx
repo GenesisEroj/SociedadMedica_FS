@@ -4,16 +4,13 @@ import { useAuth } from '../context/AuthContext'
 export default function LoginModal({ isOpen, onClose }) {
     const { login } = useAuth()
 
-    // "login" | "register" | "forgot"
-    const [mode, setMode] = useState('login')
-
+    const [mode, setMode] = useState('login') // "login" | "register" | "forgot"
     const [form, setForm] = useState({
         name: '',
         email: '',
         password: '',
         confirmPassword: '',
     })
-
     const [error, setError] = useState('')
     const [loading, setLoading] = useState(false)
 
@@ -41,7 +38,6 @@ export default function LoginModal({ isOpen, onClose }) {
 
     const validate = () => {
         if (!form.email.trim()) return 'El correo es obligatorio.'
-        // validación simple de email
         if (!/\S+@\S+\.\S+/.test(form.email.trim())) {
             return 'Ingresa un correo válido.'
         }
@@ -62,7 +58,6 @@ export default function LoginModal({ isOpen, onClose }) {
                 return 'Las contraseñas no coinciden.'
         }
 
-        // modo forgot solo valida email, ya lo hicimos arriba
         return ''
     }
 
@@ -79,21 +74,16 @@ export default function LoginModal({ isOpen, onClose }) {
         setLoading(true)
         try {
             if (mode === 'login') {
-                // 🔐 Aquí luego conectaremos con tu API real (JWT, etc.)
                 await login(form.email.trim(), form.password)
                 resetForm()
                 onClose?.()
             } else if (mode === 'register') {
-                // 👉 Luego: llamar a tu endpoint POST /usuarios/registro
-                alert(
-                    'Registro enviado (DEMO). Más adelante lo conectamos con tu API de usuarios.'
-                )
+                alert('Registro enviado (DEMO). Luego lo conectamos con tu API.')
                 resetForm()
                 onClose?.()
             } else if (mode === 'forgot') {
-                // 👉 Luego: llamar a tu endpoint POST /usuarios/recuperar-contraseña
                 alert(
-                    'Si el correo existe en el sistema, se enviará un enlace para recuperar la contraseña (DEMO).'
+                    'Si el correo existe, se enviará un enlace para recuperar la contraseña (DEMO).'
                 )
                 resetForm()
                 onClose?.()
@@ -125,13 +115,12 @@ export default function LoginModal({ isOpen, onClose }) {
             }}
         >
             <div className="card p-4" style={{ maxWidth: '430px', width: '100%' }}>
-                {/* Encabezado */}
                 <div className="d-flex justify-content-between align-items-center mb-3">
                     <h5 className="mb-0">{title}</h5>
                     <button className="btn-close" onClick={onClose}></button>
                 </div>
 
-                {/* Tabs simples arriba */}
+                {/* Tabs */}
                 <div className="btn-group w-100 mb-3" role="group">
                     <button
                         type="button"
@@ -163,7 +152,6 @@ export default function LoginModal({ isOpen, onClose }) {
                 </div>
 
                 <form onSubmit={handleSubmit}>
-                    {/* Nombre solo en registro */}
                     {mode === 'register' && (
                         <div className="mb-3 text-start">
                             <label className="form-label">Nombre completo</label>
@@ -178,7 +166,6 @@ export default function LoginModal({ isOpen, onClose }) {
                         </div>
                     )}
 
-                    {/* Email */}
                     <div className="mb-3 text-start">
                         <label className="form-label">Correo electrónico</label>
                         <input
@@ -191,7 +178,6 @@ export default function LoginModal({ isOpen, onClose }) {
                         />
                     </div>
 
-                    {/* Password (no se muestra en modo forgot) */}
                     {mode !== 'forgot' && (
                         <div className="mb-3 text-start">
                             <label className="form-label">Contraseña</label>
@@ -209,7 +195,6 @@ export default function LoginModal({ isOpen, onClose }) {
                         </div>
                     )}
 
-                    {/* Confirmar contraseña solo en registro */}
                     {mode === 'register' && (
                         <div className="mb-3 text-start">
                             <label className="form-label">Confirmar contraseña</label>
@@ -224,7 +209,6 @@ export default function LoginModal({ isOpen, onClose }) {
                         </div>
                     )}
 
-                    {/* Mensaje de error */}
                     {error && <div className="alert alert-danger py-2">{error}</div>}
 
                     <button
@@ -234,13 +218,6 @@ export default function LoginModal({ isOpen, onClose }) {
                     >
                         {loading ? 'Procesando...' : title}
                     </button>
-
-                    {mode === 'login' && (
-                        <p className="mt-3 mb-0 small text-muted text-start">
-                            ⚠️ Por ahora es un formulario de prueba. Más adelante lo
-                            conectamos con tu API de usuarios en Spring Boot y JWT.
-                        </p>
-                    )}
                 </form>
             </div>
         </div>

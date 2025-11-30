@@ -22,34 +22,14 @@ export default function Reserva({ onRequestLogin }) {
     }
 
     return (
-        <section
-            id="reserva"
-            style={{
-                minHeight: 'calc(100vh - 80px)', // alto útil de pantalla
-                paddingTop: '120px',             // separación del navbar fijo
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',            // CENTRA todo horizontalmente
-            }}
-            className="page-section"
-        >
-            {/* TÍTULO + DIVIDER */}
-            <div style={{ width: '100%' }}>
+        <section id="reserva" className="page-section screen-page">
+            <div className="container">
                 <h2 className="page-section-heading text-center text-uppercase text-secondary mb-0">
                     Reservar hora
                 </h2>
                 <Divider />
-            </div>
 
-            {/* CONTENIDO CENTRADO EN UN ANCHO MÁXIMO */}
-            <div
-                style={{
-                    width: '100%',
-                    maxWidth: '700px',   // aquí mandamos el ancho de la tarjeta / formulario
-                }}
-            >
                 {!isAuthenticated ? (
-                    // ------- VISTA SIN LOGIN ----------
                     <div className="card shadow-sm border-0 text-center mt-4">
                         <div className="card-body py-5 px-4">
                             <h4 className="card-title mb-3">
@@ -68,7 +48,6 @@ export default function Reserva({ onRequestLogin }) {
                         </div>
                     </div>
                 ) : (
-                    // ------- VISTA CON LOGIN ----------
                     <div className="card shadow-sm border-0 mt-4">
                         <div className="card-body p-4">
                             <h4 className="mb-3 text-start">Datos de la reserva</h4>

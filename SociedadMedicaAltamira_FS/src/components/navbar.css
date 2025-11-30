@@ -1,20 +1,18 @@
-/* NAVBAR general */
 #mainNav {
     padding-top: 0.6rem;
     padding-bottom: 0.6rem;
-    background-color: rgba(45, 55, 72, 0.96); /* gris azulado */
+    background-color: rgba(45, 55, 72, 0.96);
     backdrop-filter: blur(10px);
     box-shadow: 0 2px 14px rgba(0, 0, 0, 0.24);
 }
 
-/* Logo */
 .navbar-logo {
     height: 52px;
     width: auto;
     object-fit: contain;
 }
 
-/* Links del menú (Inicio, Reserva, Perfil, Admin) */
+/* Links */
 .navbar-nav .nav-link.btn-link {
     color: #e2e8f0;
     font-weight: 600;
@@ -31,7 +29,7 @@
     background-color: rgba(255, 255, 255, 0.09);
 }
 
-/* Botón "Iniciar sesión" */
+/* Botón login */
 .navbar .btn.btn-primary {
     border-radius: 999px;
     padding-inline: 1.4rem;
@@ -39,20 +37,14 @@
     box-shadow: 0 0 0 1px rgba(15, 23, 42, 0.35);
 }
 
-/* Botón "Cerrar sesión" */
+/* Botón logout */
 .navbar .btn.btn-outline-light.btn-sm {
     border-radius: 999px;
     border-width: 1px;
     padding-inline: 0.9rem;
 }
 
-/* Email del usuario (texto a la derecha) */
-.navbar .d-flex.align-items-center span {
-    font-size: 0.75rem;
-    opacity: 0.9;
-}
-
-/* Toggler (menú hamburguesa) en móvil */
+/* Toggler móvil */
 .navbar-toggler {
     font-size: 0.7rem;
     padding: 0.35rem 0.6rem;
@@ -66,7 +58,6 @@
     outline: none;
 }
 
-/* Ajustes responsivos */
 @media (max-width: 991.98px) {
     #mainNav {
         padding-top: 0.4rem;
@@ -84,3 +75,4 @@
         justify-content: center;
     }
 }
+

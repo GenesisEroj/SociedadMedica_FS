@@ -18,8 +18,7 @@ export default function App() {
     const openLogin = () => setIsLoginOpen(true)
     const closeLogin = () => setIsLoginOpen(false)
 
-    // Por si en algún momento navegamos por código,
-    // garantizamos que la vista siempre parte arriba.
+    // Cada vez que cambias de vista, sube arriba
     useEffect(() => {
         window.scrollTo({ top: 0, behavior: 'smooth' })
     }, [currentView])
@@ -50,17 +49,12 @@ export default function App() {
 
     return (
         <>
-
             <Navbar onNavigate={setCurrentView} onLoginClick={openLogin} />
-
 
             <main className="app-main">{renderContent()}</main>
 
-
             <Footer />
             <ScrollToTop />
-
-
             <LoginModal isOpen={isLoginOpen} onClose={closeLogin} />
         </>
     )
