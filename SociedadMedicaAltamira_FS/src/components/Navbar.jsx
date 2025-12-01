@@ -1,15 +1,54 @@
-import { useAuth } from '../context/AuthContext';
-import './navbar.css';
+import "./navbar.css";
 
-export default function Navbar({ onNavigate, onLoginClick }) {
-  const { user, isAuthenticated, logout } = useAuth();
+export default function Navbar({ onNavigate, onLoginClick, user, handleLogout }) {
+  // Normalizamos el rol: " admin  " -> "ADMIN"
+  // Nota: Usaremos user.role si el backend manda 'role' en minúsculas,
+  // pero mantengo 'rol' si es como viene en tu backend por defecto.
+  const normalizedRole = user?.rol
+    ? user.rol.toString().trim().toUpperCase()
+    : null
+  
+  const isAdmin = normalizedRole === 'ADMIN'
+  const isClient = user && !isAdmin // Si hay usuario y NO es admin, asumimos que es cliente
 
-  const goTo = (view) => {
-    onNavigate(view);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
+  const handleInicioClick = (e) => {
+    e.preventDefault()
+    onNavigate && onNavigate('home')
+  }
 
-  const isAdmin = user?.role === 'ADMIN';
+  const handleReservaClick = (e) => {
+    e.preventDefault()
+    onNavigate && onNavigate('reserva')
+  }
+
+  // Ahora navega a 'mis-reservas' si es cliente, o 'perfil' si es admin.
+  // En tu aplicación principal deberás mapear la ruta 'perfil' a 'AdminReservas' si el user es Admin.
+  const handleMisReservasPerfilClick = (e) => {
+    e.preventDefault()
+    if (!user) {
+      onLoginClick && onLoginClick()
+      return
+    }
+    
+    // Si es cliente, navega a la vista de sus reservas
+    if (isClient) {
+        onNavigate && onNavigate('mis-reservas') // Cambié 'perfil' a 'mis-reservas'
+        return
+    }
+
+    // Si es Admin, puede ir a 'perfil' (que es un enlace genérico) o 'admin'
+    onNavigate && onNavigate('perfil') 
+  }
+
+  const handleAdminClick = (e) => {
+    e.preventDefault()
+    if (!isAdmin) {
+      // por seguridad, si no es admin no navegamos
+      onLoginClick && onLoginClick()
+      return
+    }
+    onNavigate && onNavigate('admin')
+  }
 
   return (
     <nav
@@ -18,19 +57,20 @@ export default function Navbar({ onNavigate, onLoginClick }) {
     >
       <div className="container">
 
-        {/* LOGO */}
+        {/* LOGO -> HOME */}
         <a
           className="navbar-brand"
-          href="#page-top"
-          onClick={(e) => {
-            e.preventDefault();
-            goTo('home');
-          }}
+          href="#"
+          onClick={handleInicioClick}
         >
-          SOCIEDAD MÉDICA ALTAMIRA
+          <img
+            src="/assets/img/logo.png"
+            alt="Logo"
+            className="navbar-logo"
+          />
         </a>
 
-        {/* MENÚ HAMBURGUESA */}
+        {/* Toggle responsive */}
         <button
           className="navbar-toggler text-uppercase font-weight-bold bg-primary text-white rounded"
           type="button"
@@ -40,101 +80,92 @@ export default function Navbar({ onNavigate, onLoginClick }) {
           aria-expanded="false"
           aria-label="Toggle navigation"
         >
-          Menú <i className="fas fa-bars ms-1"></i>
+          Menu <i className="fas fa-bars"></i>
         </button>
 
-        {/* ITEMS DEL NAV */}
         <div className="collapse navbar-collapse" id="navbarResponsive">
           <ul className="navbar-nav ms-auto">
 
             {/* INICIO */}
-            <li className="nav-item mx-0 mx-lg-2">
+            <li className="nav-item mx-0 mx-lg-1">
               <a
-                href="#inicio"
-                className="nav-link px-lg-3 rounded nav-link-main"
-                onClick={(e) => {
-                  e.preventDefault();
-                  goTo('home');
-                }}
+                className="nav-link btn-link rounded"
+                href="#"
+                onClick={handleInicioClick}
               >
                 INICIO
               </a>
             </li>
 
             {/* RESERVAR HORA */}
-            <li className="nav-item mx-0 mx-lg-2">
+            <li className="nav-item mx-0 mx-lg-1">
               <a
-                href="#reserva"
-                className="nav-link px-lg-3 rounded nav-link-main"
-                onClick={(e) => {
-                  e.preventDefault();
-                  goTo('reserva');
-                }}
+                className="nav-link btn-link rounded"
+                href="#"
+                onClick={handleReservaClick}
               >
                 RESERVAR HORA
               </a>
             </li>
 
-            {/* PERFIL (SOLO LOGUEADO) */}
-            {isAuthenticated && (
-              <li className="nav-item mx-0 mx-lg-2">
-                <a
-                  href="#perfil"
-                  className="nav-link px-lg-3 rounded nav-link-main"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    goTo('perfil');
-                  }}
-                >
-                  MI PERFIL
-                </a>
-              </li>
-            )}
+            {/* PERFIL / MIS RESERVAS */}
+            <li className="nav-item mx-0 mx-lg-1">
+              <a
+                className="nav-link btn-link rounded"
+                href="#"
+                onClick={handleMisReservasPerfilClick}
+              >
+                {/* ✅ CORRECCIÓN/AJUSTE: Muestra 'MIS RESERVAS' solo si es Cliente, si no 'MI PERFIL' */}
+                {isClient ? 'MIS RESERVAS' : 'MI PERFIL'} 
+              </a>
+            </li>
 
-            {/* ADMIN (SOLO ROLE ADMIN) */}
+            {/* ADMIN SOLO SI ES ADMIN */}
             {isAdmin && (
-              <li className="nav-item mx-0 mx-lg-2">
+              <li className="nav-item mx-0 mx-lg-1">
                 <a
-                  href="#admin"
-                  className="nav-link px-lg-3 rounded nav-link-admin"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    goTo('admin');
-                  }}
+                  className="nav-link btn-link rounded"
+                  href="#"
+                  onClick={handleAdminClick}
                 >
                   ADMIN
                 </a>
               </li>
             )}
 
-            {/* LOGIN / LOGOUT */}
-            <li className="nav-item ms-lg-3">
-              {!isAuthenticated ? (
+            {/* SALUDO + LOGIN/LOGOUT */}
+            {user ? (
+              <>
+                <li className="nav-item mx-0 mx-lg-1 d-flex align-items-center">
+                  <span className="navbar-greeting">
+                    {/* ✅ CORRECCIÓN: Muestra el nombre (user.name) en lugar del email */}
+                    HOLA, {user.name ? user.name.toUpperCase() : 'USUARIO'}
+                  </span>
+                </li>
+                <li className="nav-item mx-0 mx-lg-1">
+                  <button
+                    className="logout-btn"
+                    type="button"
+                    onClick={handleLogout}
+                  >
+                    Cerrar sesión
+                  </button>
+                </li>
+              </>
+            ) : (
+              <li className="nav-item mx-0 mx-lg-1">
                 <button
+                  className="login-btn"
                   type="button"
-                  className="btn btn-primary btn-sm login-btn"
                   onClick={onLoginClick}
                 >
                   Iniciar sesión
                 </button>
-              ) : (
-                <div className="d-flex flex-column flex-lg-row align-items-lg-center gap-2 text-white">
-                  <span className="fw-bold small saludo-usuario">
-                    HOLA, {user?.email?.toUpperCase()}
-                  </span>
-                  <button
-                    type="button"
-                    className="btn btn-outline-light btn-sm"
-                    onClick={logout}
-                  >
-                    Cerrar sesión
-                  </button>
-                </div>
-              )}
-            </li>
+              </li>
+            )}
           </ul>
         </div>
       </div>
     </nav>
-  );
+  )
 }

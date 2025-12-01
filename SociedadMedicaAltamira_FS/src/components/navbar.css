@@ -1,54 +1,128 @@
-/* separa los ítems del menú */
-.navbar-nav .nav-item {
-  margin-top: 4px;
-  margin-bottom: 4px;
+/* ================================
+   ESTILO GENERAL DEL NAVBAR
+================================ */
+#mainNav {
+  padding-top: 0.9rem;
+  padding-bottom: 0.9rem;
+  background-color: #55cdf5; /* Celeste principal */
+  box-shadow: 0 2px 14px rgba(0, 0, 0, 0.24);
+  transition: background-color 0.3s ease;
 }
 
-/* estilo general de los links del menú */
-.nav-link-main {
+/* ================================
+   LOGO
+================================ */
+.navbar-logo {
+  height: 65px;    /* tamaño ajustado */
+  width: auto;
+  object-fit: contain;
+}
+
+/* ================================
+   ESTILOS DE LINKS
+================================ */
+.navbar-nav .nav-link.btn-link {
+  color: #ffffff !important;
   font-weight: 700;
-  letter-spacing: 1px;
-  color: #001a66 !important;        /* azul fuerte */
-  background: transparent !important;
-  border: none !important;
-  box-shadow: none !important;
+  font-size: 1rem; 
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  padding-inline: 1.2rem !important;
+  border-radius: 999px;
   text-decoration: none;
+  white-space: nowrap;  /* evita que se corten en dos líneas */
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.nav-link-main:hover,
-.nav-link-main:focus {
-  color: #0033cc !important;
+.navbar-nav .nav-link.btn-link:hover {
+  background-color: rgba(255, 255, 255, 0.20);
+  color: #ffffff !important;
 }
 
-/* link ADMIN en amarillo */
-.nav-link-admin {
-  font-weight: 800;
-  letter-spacing: 1px;
-  color: #001a66 !important;        /* amarillo */
-  background: transparent !important;
-  border: none !important;
-  box-shadow: none !important;
-  text-decoration: none;
+/* ================================
+   SALUDO "HOLA, CORREO"
+================================ */
+.navbar-greeting {
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  white-space: nowrap;
 }
 
-.nav-link-admin:hover,
-.nav-link-admin:focus {
-  color: #001a66 !important;
-}
-
-/* botón de login */
+/* ================================
+   BOTÓN INICIAR SESIÓN
+================================ */
 .login-btn {
-  margin-top: 4px;
+  border: 1px solid white;
+  background: white;
+  color: #004080;
+  font-size: 0.9rem;
+  padding: 6px 18px;
+  border-radius: 999px;
+  font-weight: bold;
+  text-transform: uppercase;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: 0.2s ease;
 }
 
-/* saludo “HOLA, CORREO” */
-.saludo-usuario {
-  color: #001a66;
+.login-btn:hover {
+  background: transparent;
+  color: #ffffff;
 }
 
-/* en pantallas chicas, que todo quede con buen espacio */
+/* ================================
+   BOTÓN CERRAR SESIÓN
+================================ */
+.logout-btn {
+  border: 1px solid white;
+  background: transparent;
+  color: white;
+  font-size: 0.9rem;
+  padding: 6px 18px;
+  border-radius: 999px;
+  font-weight: bold;
+  text-transform: uppercase;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: 0.2s ease;
+}
+
+.logout-btn:hover {
+  background: white;
+  color: #004080;
+}
+
+/* ================================
+   CORRECCIÓN DE BOTÓN TOGGLER MOBILE
+================================ */
+.navbar-toggler {
+  border: none;
+}
+
+.navbar-toggler:focus {
+  outline: none;
+  box-shadow: none;
+}
+
+/* ================================
+   CORRECCIÓN DE ESPACIADOS Y RESPONSIVE
+================================ */
 @media (max-width: 992px) {
-  .navbar-nav .nav-item {
-    margin: 6px 0;
+  .navbar-nav .nav-link.btn-link {
+    padding: 0.7rem 1rem !important;
+    font-size: 1rem;
+  }
+
+  .navbar-logo {
+    height: 55px;
+  }
+
+  .login-btn, .logout-btn {
+    padding: 6px 14px;
   }
 }
