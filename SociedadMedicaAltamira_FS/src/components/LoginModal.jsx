@@ -101,12 +101,27 @@ export default function LoginModal({ isOpen, onClose }) {
 
       if (mode === 'register') {
         // 📝 REGISTRO → POST /registro
+        // Enviamos todos los datos y damos compatibilidad
+        // con nombres en español/inglés y rol/role
         const body = {
+          // nombre / name
+          nombre: form.name.trim(),
           name: form.name.trim(),
+          apellido: form.apellido.trim(),
+
           email: form.email.trim(),
           password: form.password,
-          role: 'CLIENT', // coincide con RolUsuario.CLIENT del backend
+
+          edad: Number(form.edad),
+          numeroDocumento: form.numeroDocumento.trim(),
+          tipoDocumento: form.tipoDocumento,
+
+          // rol / role para que el backend tome el que corresponda
+          rol: 'CLIENT',
+          role: 'CLIENT',
         }
+
+        console.log('📤 Registro usuario body:', body)
 
         const res = await fetch(`${API_BASE_URL}/registro`, {
           method: 'POST',
@@ -118,12 +133,15 @@ export default function LoginModal({ isOpen, onClose }) {
           let msg = 'Error al registrar usuario.'
           try {
             const text = await res.text()
-            if (text) msg = text // por si el backend devuelve texto plano
+            if (text) msg = text // por si el backend devuelve texto plano o JSON con mensaje
           } catch {
             // ignore
           }
           throw new Error(msg)
         }
+
+        const data = await res.json()
+        console.log('✅ Usuario registrado:', data)
 
         // después de registrar, logueamos automáticamente
         await login(form.email.trim(), form.password)
@@ -168,8 +186,8 @@ export default function LoginModal({ isOpen, onClose }) {
         style={{
           maxWidth: '450px',
           width: '100%',
-          maxHeight: '90vh',   // altura máxima del modal
-          overflowY: 'auto',   // 👈 SCROLL VERTICAL
+          maxHeight: '90vh', // altura máxima del modal
+          overflowY: 'auto', // 👈 SCROLL VERTICAL
         }}
         onClick={(e) => e.stopPropagation()}
       >
@@ -346,4 +364,3 @@ export default function LoginModal({ isOpen, onClose }) {
     </div>
   )
 }
-

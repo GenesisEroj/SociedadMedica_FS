@@ -1,7 +1,7 @@
 // src/components/Navbar.jsx
 import { useAuth } from '../context/AuthContext'
 
-export default function Navbar({ onNavigate }) {
+export default function Navbar({ onNavigate, onLoginClick }) {
   const { isAuthenticated, user, logout } = useAuth()
 
   const goTo = (section) => {
@@ -13,11 +13,11 @@ export default function Navbar({ onNavigate }) {
   const handleLogout = () => {
     logout()
     if (typeof onNavigate === 'function') {
-      onNavigate('inicio')
+      onNavigate('home') // o 'inicio' según tu flujo
     }
   }
 
-  // 🔍 Logs para ver qué usuario y rol ve el Navbar
+  // Logs opcionales de depuración
   console.log('🟡 Navbar user:', user)
   console.log('🟡 Navbar user.role:', user?.role)
 
@@ -31,7 +31,7 @@ export default function Navbar({ onNavigate }) {
         <button
           type="button"
           className="navbar-brand btn btn-link p-0 m-0 text-decoration-none"
-          onClick={() => goTo('inicio')}
+          onClick={() => goTo('home')}
         >
           <img
             src="./assets/img/logo.png"
@@ -58,7 +58,7 @@ export default function Navbar({ onNavigate }) {
             <li className="nav-item mx-0 mx-lg-1">
               <button
                 className="nav-link py-3 px-0 px-lg-3 rounded btn btn-link"
-                onClick={() => goTo('inicio')}
+                onClick={() => goTo('home')}
               >
                 Inicio
               </button>
@@ -121,8 +121,8 @@ export default function Navbar({ onNavigate }) {
                 <button
                   className="btn btn-primary ms-lg-3 my-2 my-lg-0"
                   type="button"
-                  data-bs-toggle="modal"
-                  data-bs-target="#loginModal"
+                  // 👇 usamos la función que viene desde App.jsx
+                  onClick={onLoginClick}
                 >
                   Iniciar sesión
                 </button>
