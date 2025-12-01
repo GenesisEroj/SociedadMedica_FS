@@ -31,6 +31,7 @@ function parseFechaHora(str) {
 }
 
 export default function AdminReservas() {
+  // Nota: Usamos 'rol' si es como viene de tu backend
   const { isAuthenticated, user } = useAuth()
 
   const [reservas, setReservas] = useState([])
@@ -38,7 +39,8 @@ export default function AdminReservas() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
-  const esAdmin = isAuthenticated && user?.role === 'ADMIN'
+  // Usamos user?.rol en la lógica de acceso
+  const esAdmin = isAuthenticated && user?.rol?.toUpperCase() === 'ADMIN'
 
   // 🔎 Filtrar por nombre, correo, documento o fecha
   const reservasFiltradas = useMemo(() => {
@@ -218,13 +220,13 @@ export default function AdminReservas() {
                     return (
                       <tr key={r.id}>
                         <td>{index + 1}</td>
-                        {/* ✅ CORRECCIÓN 1: Usar comillas invertidas (backticks) para Template Literals */}
-                        <td>{`${r.nombre} ${r.apellido}`}</td> 
+                        {/* ✅ CORRECCIÓN DE SINTAXIS JSX: Usar `template literals` con backticks */}
+                        <td>{`${r.nombre} ${r.apellido}`}</td>
                         <td>{r.correo}</td>
                         <td>{fecha}</td>
                         <td>{hora}</td>
-                        {/* ✅ CORRECCIÓN 2: Usar comillas invertidas (backticks) para Template Literals */}
-                        <td>{`${r.tipoDocumento} ${r.numeroDocumento}`}</td> 
+                        {/* ✅ CORRECCIÓN DE SINTAXIS JSX: Usar `template literals` con backticks */}
+                        <td>{`${r.tipoDocumento} ${r.numeroDocumento}`}</td>
                         <td>{r.edad}</td>
                         <td>
                           <button className="btn btn-sm btn-outline-success me-2">

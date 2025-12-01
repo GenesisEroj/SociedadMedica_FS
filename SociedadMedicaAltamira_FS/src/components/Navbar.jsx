@@ -2,14 +2,11 @@ import "./navbar.css";
 
 export default function Navbar({ onNavigate, onLoginClick, user, handleLogout }) {
   // Normalizamos el rol: " admin  " -> "ADMIN"
-  // Nota: Usaremos user.role si el backend manda 'role' en minúsculas,
-  // pero mantengo 'rol' si es como viene en tu backend por defecto.
   const normalizedRole = user?.rol
     ? user.rol.toString().trim().toUpperCase()
     : null
   
   const isAdmin = normalizedRole === 'ADMIN'
-  const isClient = user && !isAdmin // Si hay usuario y NO es admin, asumimos que es cliente
 
   const handleInicioClick = (e) => {
     e.preventDefault()
@@ -21,27 +18,20 @@ export default function Navbar({ onNavigate, onLoginClick, user, handleLogout })
     onNavigate && onNavigate('reserva')
   }
 
-  // Ahora navega a 'mis-reservas' si es cliente, o 'perfil' si es admin.
-  // En tu aplicación principal deberás mapear la ruta 'perfil' a 'AdminReservas' si el user es Admin.
-  const handleMisReservasPerfilClick = (e) => {
+  // ✅ CORREGIDO: Función unificada para navegar a MI PERFIL
+  const handlePerfilClick = (e) => {
     e.preventDefault()
     if (!user) {
       onLoginClick && onLoginClick()
       return
     }
-    
-    // Si es cliente, navega a la vista de sus reservas
-    if (isClient) {
-        onNavigate && onNavigate('mis-reservas') // Cambié 'perfil' a 'mis-reservas'
-        return
-    }
-
-    // Si es Admin, puede ir a 'perfil' (que es un enlace genérico) o 'admin'
+    // Redirige a la ruta 'perfil' para todos los usuarios logueados (Admin o Cliente)
     onNavigate && onNavigate('perfil') 
   }
 
   const handleAdminClick = (e) => {
     e.preventDefault()
+    // La comprobación de rol se basa en la variable isAdmin ya calculada
     if (!isAdmin) {
       // por seguridad, si no es admin no navegamos
       onLoginClick && onLoginClick()
@@ -108,19 +98,18 @@ export default function Navbar({ onNavigate, onLoginClick, user, handleLogout })
               </a>
             </li>
 
-            {/* PERFIL / MIS RESERVAS */}
+            {/* MI PERFIL (Botón unificado) */}
             <li className="nav-item mx-0 mx-lg-1">
               <a
                 className="nav-link btn-link rounded"
                 href="#"
-                onClick={handleMisReservasPerfilClick}
+                onClick={handlePerfilClick}
               >
-                {/* ✅ CORRECCIÓN/AJUSTE: Muestra 'MIS RESERVAS' solo si es Cliente, si no 'MI PERFIL' */}
-                {isClient ? 'MIS RESERVAS' : 'MI PERFIL'} 
+                MI PERFIL
               </a>
             </li>
 
-            {/* ADMIN SOLO SI ES ADMIN */}
+            {/* ✅ BOTÓN ADMIN: SOLO SI ES ADMIN */}
             {isAdmin && (
               <li className="nav-item mx-0 mx-lg-1">
                 <a
@@ -138,7 +127,6 @@ export default function Navbar({ onNavigate, onLoginClick, user, handleLogout })
               <>
                 <li className="nav-item mx-0 mx-lg-1 d-flex align-items-center">
                   <span className="navbar-greeting">
-                    {/* ✅ CORRECCIÓN: Muestra el nombre (user.name) en lugar del email */}
                     HOLA, {user.name ? user.name.toUpperCase() : 'USUARIO'}
                   </span>
                 </li>
