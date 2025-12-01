@@ -1,44 +1,25 @@
-import "./navbar.css";
+// src/components/Navbar.jsx
+import { useAuth } from '../context/AuthContext'
 
-export default function Navbar({ onNavigate, onLoginClick, user, handleLogout }) {
-  // Normalizamos el rol: " admin  " -> "ADMIN"
-  const normalizedRole = user?.rol
-    ? user.rol.toString().trim().toUpperCase()
-    : null
-  
-  const isAdmin = normalizedRole === 'ADMIN'
+export default function Navbar({ onNavigate }) {
+  const { isAuthenticated, user, logout } = useAuth()
 
-  const handleInicioClick = (e) => {
-    e.preventDefault()
-    onNavigate && onNavigate('home')
-  }
-
-  const handleReservaClick = (e) => {
-    e.preventDefault()
-    onNavigate && onNavigate('reserva')
-  }
-
-  // ✅ CORREGIDO: Función unificada para navegar a MI PERFIL
-  const handlePerfilClick = (e) => {
-    e.preventDefault()
-    if (!user) {
-      onLoginClick && onLoginClick()
-      return
+  const goTo = (section) => {
+    if (typeof onNavigate === 'function') {
+      onNavigate(section)
     }
-    // Redirige a la ruta 'perfil' para todos los usuarios logueados (Admin o Cliente)
-    onNavigate && onNavigate('perfil') 
   }
 
-  const handleAdminClick = (e) => {
-    e.preventDefault()
-    // La comprobación de rol se basa en la variable isAdmin ya calculada
-    if (!isAdmin) {
-      // por seguridad, si no es admin no navegamos
-      onLoginClick && onLoginClick()
-      return
+  const handleLogout = () => {
+    logout()
+    if (typeof onNavigate === 'function') {
+      onNavigate('inicio')
     }
-    onNavigate && onNavigate('admin')
   }
+
+  // 🔍 Logs para ver qué usuario y rol ve el Navbar
+  console.log('🟡 Navbar user:', user)
+  console.log('🟡 Navbar user.role:', user?.role)
 
   return (
     <nav
@@ -46,21 +27,19 @@ export default function Navbar({ onNavigate, onLoginClick, user, handleLogout })
       id="mainNav"
     >
       <div className="container">
-
-        {/* LOGO -> HOME */}
-        <a
-          className="navbar-brand"
-          href="#"
-          onClick={handleInicioClick}
+        {/* Logo / Inicio */}
+        <button
+          type="button"
+          className="navbar-brand btn btn-link p-0 m-0 text-decoration-none"
+          onClick={() => goTo('inicio')}
         >
           <img
-            src="/assets/img/logo.png"
-            alt="Logo"
+            src="./assets/img/logo.png"
+            alt="logoempresa"
             className="navbar-logo"
           />
-        </a>
+        </button>
 
-        {/* Toggle responsive */}
         <button
           className="navbar-toggler text-uppercase font-weight-bold bg-primary text-white rounded"
           type="button"
@@ -70,87 +49,85 @@ export default function Navbar({ onNavigate, onLoginClick, user, handleLogout })
           aria-expanded="false"
           aria-label="Toggle navigation"
         >
-          Menu <i className="fas fa-bars"></i>
+          Menú <i className="fas fa-bars"></i>
         </button>
 
         <div className="collapse navbar-collapse" id="navbarResponsive">
-          <ul className="navbar-nav ms-auto">
-
+          <ul className="navbar-nav ms-auto align-items-lg-center">
             {/* INICIO */}
             <li className="nav-item mx-0 mx-lg-1">
-              <a
-                className="nav-link btn-link rounded"
-                href="#"
-                onClick={handleInicioClick}
+              <button
+                className="nav-link py-3 px-0 px-lg-3 rounded btn btn-link"
+                onClick={() => goTo('inicio')}
               >
-                INICIO
-              </a>
+                Inicio
+              </button>
             </li>
 
-            {/* RESERVAR HORA */}
+            {/* RESERVA */}
             <li className="nav-item mx-0 mx-lg-1">
-              <a
-                className="nav-link btn-link rounded"
-                href="#"
-                onClick={handleReservaClick}
+              <button
+                className="nav-link py-3 px-0 px-lg-3 rounded btn btn-link"
+                onClick={() => goTo('reserva')}
               >
-                RESERVAR HORA
-              </a>
+                Reservar hora
+              </button>
             </li>
 
-            {/* MI PERFIL (Botón unificado) */}
-            <li className="nav-item mx-0 mx-lg-1">
-              <a
-                className="nav-link btn-link rounded"
-                href="#"
-                onClick={handlePerfilClick}
-              >
-                MI PERFIL
-              </a>
-            </li>
-
-            {/* ✅ BOTÓN ADMIN: SOLO SI ES ADMIN */}
-            {isAdmin && (
-              <li className="nav-item mx-0 mx-lg-1">
-                <a
-                  className="nav-link btn-link rounded"
-                  href="#"
-                  onClick={handleAdminClick}
-                >
-                  ADMIN
-                </a>
-              </li>
-            )}
-
-            {/* SALUDO + LOGIN/LOGOUT */}
-            {user ? (
-              <>
-                <li className="nav-item mx-0 mx-lg-1 d-flex align-items-center">
-                  <span className="navbar-greeting">
-                    HOLA, {user.name ? user.name.toUpperCase() : 'USUARIO'}
-                  </span>
-                </li>
-                <li className="nav-item mx-0 mx-lg-1">
-                  <button
-                    className="logout-btn"
-                    type="button"
-                    onClick={handleLogout}
-                  >
-                    Cerrar sesión
-                  </button>
-                </li>
-              </>
-            ) : (
+            {/* MIS RESERVAS (solo CLIENT) */}
+            {isAuthenticated && user?.role === 'CLIENT' && (
               <li className="nav-item mx-0 mx-lg-1">
                 <button
-                  className="login-btn"
-                  type="button"
-                  onClick={onLoginClick}
+                  className="nav-link py-3 px-0 px-lg-3 rounded btn btn-link"
+                  onClick={() => goTo('perfil')}
                 >
-                  Iniciar sesión
+                  Mis reservas
                 </button>
               </li>
             )}
+
+            {/* ADMIN (solo ADMIN) */}
+            {isAuthenticated && user?.role === 'ADMIN' && (
+              <li className="nav-item mx-0 mx-lg-1">
+                <button
+                  className="nav-link py-3 px-0 px-lg-3 rounded btn btn-link"
+                  onClick={() => goTo('admin')}
+                >
+                  Admin
+                </button>
+              </li>
+            )}
+
+            {/* Nombre de usuario (si hay sesión) */}
+            {isAuthenticated && user?.email && (
+              <li className="nav-item mx-0 mx-lg-1 d-none d-lg-block">
+                <span className="nav-link py-3 px-0 px-lg-3 rounded">
+                  Hola, {user.email}
+                </span>
+              </li>
+            )}
+
+            {/* Botón Login / Logout */}
+            <li className="nav-item mx-0 mx-lg-1">
+              {isAuthenticated ? (
+                <button
+                  className="btn btn-primary ms-lg-3 my-2 my-lg-0"
+                  type="button"
+                  onClick={handleLogout}
+                >
+                  Cerrar sesión
+                </button>
+              ) : (
+                <button
+                  className="btn btn-primary ms-lg-3 my-2 my-lg-0"
+                  type="button"
+                  data-bs-toggle="modal"
+                  data-bs-target="#loginModal"
+                >
+                  Iniciar sesión
+                </button>
+              )}
+            </li>
           </ul>
         </div>
       </div>

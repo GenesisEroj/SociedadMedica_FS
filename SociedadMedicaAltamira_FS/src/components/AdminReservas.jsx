@@ -1,3 +1,4 @@
+// src/components/AdminReservas.jsx
 import { useEffect, useMemo, useState } from 'react'
 import { useAuth } from '../context/AuthContext'
 import Divider from './Divider.jsx'
@@ -31,7 +32,6 @@ function parseFechaHora(str) {
 }
 
 export default function AdminReservas() {
-  // Nota: Usamos 'rol' si es como viene de tu backend
   const { isAuthenticated, user } = useAuth()
 
   const [reservas, setReservas] = useState([])
@@ -39,8 +39,9 @@ export default function AdminReservas() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
-  // Usamos user?.rol en la lógica de acceso
-  const esAdmin = isAuthenticated && user?.rol?.toUpperCase() === 'ADMIN'
+  // ✅ Usamos SIEMPRE user.role (normalizado en AuthContext)
+  const esAdmin =
+    isAuthenticated && user?.role && user.role.toUpperCase() === 'ADMIN'
 
   // 🔎 Filtrar por nombre, correo, documento o fecha
   const reservasFiltradas = useMemo(() => {
@@ -156,7 +157,6 @@ export default function AdminReservas() {
   return (
     <section className="page-section">
       <div className="container">
-        
         <h2 className="page-section-heading text-center text-uppercase text-secondary mb-0">
           ADMINISTRACIÓN DE RESERVAS
         </h2>
@@ -164,7 +164,6 @@ export default function AdminReservas() {
 
         {/* Barra superior */}
         <div className="d-flex justify-content-between align-items-center mb-3">
-          
           <input
             type="text"
             className="form-control me-3"
@@ -187,7 +186,6 @@ export default function AdminReservas() {
               + Nueva reserva
             </button>
           </div>
-
         </div>
 
         {loading && <p className="text-muted">Cargando reservas...</p>}
@@ -220,12 +218,10 @@ export default function AdminReservas() {
                     return (
                       <tr key={r.id}>
                         <td>{index + 1}</td>
-                        {/* ✅ CORRECCIÓN DE SINTAXIS JSX: Usar `template literals` con backticks */}
                         <td>{`${r.nombre} ${r.apellido}`}</td>
                         <td>{r.correo}</td>
                         <td>{fecha}</td>
                         <td>{hora}</td>
-                        {/* ✅ CORRECCIÓN DE SINTAXIS JSX: Usar `template literals` con backticks */}
                         <td>{`${r.tipoDocumento} ${r.numeroDocumento}`}</td>
                         <td>{r.edad}</td>
                         <td>
@@ -252,25 +248,23 @@ export default function AdminReservas() {
                     Cantidad de reservas agrupadas por tipo de documento (RUT, PASAPORTE, etc.)
                   </p>
 
-                  <div style={{ width: "100%", height: 300 }}>
-                    <ResponsiveContainer>
-                      <BarChart data={docTypeData}>
-                        <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis dataKey="tipoDocumento" />
-                        <YAxis allowDecimals={false} />
-                        <Tooltip />
-                        <Legend />
-                        <Bar dataKey="count" name="Reservas" />
-                      </BarChart>
-                    </ResponsiveContainer>
-                  </div>
-
+                    <div style={{ width: "100%", height: 300 }}>
+                      <ResponsiveContainer>
+                        <BarChart data={docTypeData}>
+                          <CartesianGrid strokeDasharray="3 3" />
+                          <XAxis dataKey="tipoDocumento" />
+                          <YAxis allowDecimals={false} />
+                          <Tooltip />
+                          <Legend />
+                          <Bar dataKey="count" name="Reservas" />
+                        </BarChart>
+                      </ResponsiveContainer>
+                    </div>
                 </div>
               </div>
             )}
           </>
         )}
-
       </div>
     </section>
   )

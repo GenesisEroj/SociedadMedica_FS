@@ -7,6 +7,40 @@ const AuthContext = createContext(null)
 const API_BASE_URL =
   import.meta.env.VITE_API_USUARIO_URL ?? 'http://localhost:8081/api/usuario'
 
+// Normaliza el rol a "ADMIN" o "CLIENT"
+const normalizarRol = (rol) => {
+  if (!rol) return 'CLIENT'
+
+  let r = rol
+
+  // Si viene como objeto { authority: "..."} o { nombre: "..." }
+  if (typeof r === 'object' && !Array.isArray(r)) {
+    r = r.authority ?? r.nombre ?? r.rol ?? r.role ?? ''
+  }
+
+  // Si viene como array ["ROLE_ADMIN"] o [{authority: "ROLE_ADMIN"}]
+  if (Array.isArray(r)) {
+    const primero = r[0]
+    if (typeof primero === 'string') {
+      r = primero
+    } else if (typeof primero === 'object') {
+      r =
+        primero.authority ??
+        primero.nombre ??
+        primero.rol ??
+        primero.role ??
+        ''
+    }
+  }
+
+  const upper = r.toString().toUpperCase()
+
+  // Cubre casos: "ADMIN", "ROLE_ADMIN", "ADMINISTRADOR"
+  if (upper.includes('ADMIN')) return 'ADMIN'
+
+  return 'CLIENT'
+}
+
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(() => {
     if (typeof window === 'undefined') return null
@@ -32,21 +66,37 @@ export function AuthProvider({ children }) {
       let message = 'Error al iniciar sesión'
       try {
         const text = await res.text()
-        // si el backend manda texto plano, usamos eso
         if (text) message = text
-      } catch {
-        // ignorar
-      }
+      } catch {}
       throw new Error(message)
     }
 
-    // UsuarioResponse { token, userId, name, email, role }
+    // Respuesta del backend
     const data = await res.json()
+    console.log('🔵 Respuesta /login:', data)
 
-    setUser(data)
+    // Tomamos cualquier variante posible del rol
+    const rawRole =
+      data.role ??
+      data.rol ??
+      data.tipoUsuario ??
+      data.userRole ??
+      data.roles ??
+      data.authorities
+
+    console.log('🟣 rawRole que detecto:', rawRole)
+
+    const userNormalizado = {
+      ...data,
+      role: normalizarRol(rawRole),
+    }
+
+    console.log('🟢 userNormalizado que guardo:', userNormalizado)
+
+    setUser(userNormalizado)
 
     if (typeof window !== 'undefined') {
-      localStorage.setItem('authUser', JSON.stringify(data))
+      localStorage.setItem('authUser', JSON.stringify(userNormalizado))
       if (data.token) {
         localStorage.setItem('authToken', data.token)
       }
