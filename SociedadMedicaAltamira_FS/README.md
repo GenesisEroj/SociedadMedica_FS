@@ -14,15 +14,10 @@ Indicador IE1.1.1 – Muy buen desempeño
 El contenido web fue desarrollado utilizando estructura semántica válida de HTML5, incorporando correctamente etiquetas estructurales como:
 
 <header>
-
 <nav>
-
 <main>
-
 <section>
-
 <article>
-
 <footer>
 
 Cada página presenta una estructura clara, coherente y alineada con las buenas prácticas actuales de desarrollo web.
